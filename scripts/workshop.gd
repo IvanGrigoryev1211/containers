@@ -20,6 +20,7 @@ var target_station: StaticBody3D
 var debug_timer := 0.0
 var debug_panel: CanvasLayer
 var game_state: Variant
+var auction_screen: CanvasLayer
 
 
 func _ready() -> void:
@@ -32,6 +33,8 @@ func _ready() -> void:
 	_build_player()
 	_build_ui()
 	_build_debug_panel()
+	auction_screen = preload("res://scripts/auction_screen.gd").new()
+	add_child(auction_screen)
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
@@ -45,7 +48,7 @@ func _process(delta: float) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if player == null:
+	if player == null or (auction_screen != null and auction_screen.visible):
 		return
 
 	var move_input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
@@ -58,6 +61,12 @@ func _physics_process(_delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	# Modal input belongs to the auction, including E typed into the hypothesis.
+	if auction_screen != null and auction_screen.visible:
+		if event.is_action_pressed("release_cursor"):
+			auction_screen.close()
+			get_viewport().set_input_as_handled()
+		return
 	# Use the physical E key directly as well as the InputMap action. This keeps
 	# interaction available even when a UI control has already handled the event.
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -274,7 +283,7 @@ func _build_debug_panel() -> void:
 func _update_interaction_target() -> void:
 	target_station = null
 	prompt_label.text = ""
-	if camera == null:
+	if camera == null or (auction_screen != null and auction_screen.visible):
 		return
 
 	var query := PhysicsRayQueryParameters3D.create(camera.global_position, camera.global_position + -camera.global_transform.basis.z * INTERACTION_DISTANCE)
@@ -295,6 +304,9 @@ func _interact_with_target() -> void:
 	if target_station == null:
 		return
 	var station_name := str(target_station.get_meta("station_name"))
+	if station_name == "Терминал аукциона":
+		auction_screen.open()
+		return
 	debug_label.text = "DEBUG: взаимодействие — " + station_name
 	debug_timer = 2.5
 

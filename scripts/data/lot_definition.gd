@@ -1,7 +1,8 @@
 extends Resource
 class_name LotDefinition
 
-## Auction-lot data. Auction screens and bidding are intentionally not implemented.
+## Auction-lot data. S03 uses typical_winning_price as the fixed rival threshold
+## and settlement price; bid_limit is the maximum allowed player limit.
 @export var id := ""
 @export var display_name := ""
 @export var start_price := 0
