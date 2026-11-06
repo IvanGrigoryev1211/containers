@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="EvidenceDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/evidence_definition.gd" id="1_evidence"]
+
+[resource]
+script = ExtResource("1_evidence")
+id = "vega_machine_oil"
+title = "Машинное масло"
+description = "На внешней поверхности есть следы машинного масла."
+clue_type = "Состояние и запах"
+supports_hypothesis = "Лот связан с техникой, инструментами или обслуживанием приборов."
+risk_note = "Масло может относиться к упаковке, а не к ценному объекту."

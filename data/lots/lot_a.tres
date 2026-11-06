@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="LotDefinition" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/lot_definition.gd" id="1_lot"]
+[ext_resource type="Resource" path="res://data/evidence/vega_heavy_compact_case.tres" id="2_evidence"]
+[ext_resource type="Resource" path="res://data/evidence/vega_machine_oil.tres" id="3_evidence"]
+[ext_resource type="Resource" path="res://data/evidence/vega_repair_sticker.tres" id="4_evidence"]
+[ext_resource type="Resource" path="res://data/evidence/vega_single_hard_object.tres" id="5_evidence"]
+[ext_resource type="Resource" path="res://data/items/rusted_wrench_set.tres" id="6_item"]
+[ext_resource type="Resource" path="res://data/items/oily_rags_and_fasteners.tres" id="7_item"]
+[ext_resource type="Resource" path="res://data/items/calibrator_v12.tres" id="8_item"]
+[ext_resource type="Resource" path="res://data/items/calibration_lab_label.tres" id="9_item"]
+
+[resource]
+script = ExtResource("1_lot")
+id = "lot_a_vega_box_17"
+display_name = "Ящик «Вега», бокс 17"
+start_price = 520
+bid_limit = 620
+typical_winning_price = 580
+guaranteed_price_floor = 65
+visible_evidence = Array[ExtResource("2_evidence")]([ExtResource("2_evidence"), ExtResource("3_evidence"), ExtResource("4_evidence"), ExtResource("5_evidence")])
+future_items = Array[ExtResource("6_item")]([ExtResource("6_item"), ExtResource("7_item"), ExtResource("8_item"), ExtResource("9_item")])
+designer_notes = "Лот A из VerticalSlice v0.2. Внешняя пресная вода — риск для крышки, но не приговор внутренней упаковке."

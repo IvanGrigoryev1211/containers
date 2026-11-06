@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="EvidenceDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/evidence_definition.gd" id="1_evidence"]
+
+[resource]
+script = ExtResource("1_evidence")
+id = "vega_heavy_compact_case"
+title = "Тяжёлый компактный ящик"
+description = "Вес сосредоточен в небольшом корпусе; ящик не звучит как набор мелкого инструмента."
+clue_type = "Вес и форма"
+supports_hypothesis = "Внутри может быть один прочный прибор или измерительное оборудование."
+risk_note = "Точная категория содержимого не гарантирована."

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="EvidenceDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/evidence_definition.gd" id="1_evidence"]
+
+[resource]
+script = ExtResource("1_evidence")
+id = "vega_repair_sticker"
+title = "Наклейка Vega Instrument Repair"
+description = "На ящике сохранилась наклейка мастерской «Vega Instrument Repair»."
+clue_type = "Маркировка"
+supports_hypothesis = "Внутри возможен измерительный прибор, а не только обычный инструмент."
+risk_note = "Наклейка могла остаться от прежнего использования ящика."

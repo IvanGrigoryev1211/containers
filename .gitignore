@@ -1,0 +1,24 @@
+# Godot editor cache and imported resources
+.godot/
+
+# Local engine binaries
+Godot_v*-stable_win64.exe/
+
+# Exported builds and packages
+build/
+dist/
+exports/
+*.exe
+*.pck
+*.zip
+
+# Local logs and temporary files
+*.log
+*.tmp
+*.bak
+*~
+
+# OS metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
