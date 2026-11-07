@@ -7,6 +7,7 @@ const STARTING_TOKENS := 750
 const LOT_A = preload("res://data/lots/lot_a.tres")
 enum OpeningState { LOCKED, SEALED, UNSEALED, SORTING, COMPLETE }
 const OPENING_ZONES := ["быстрая продажа", "рабочий стол", "хранение"]
+const QUICK_SALE_ITEM_IDS := ["rusted_wrench_set", "oily_rags_and_fasteners"]
 
 var tokens: int = STARTING_TOKENS
 var current_stage := "Мастерская — аукцион лота A"
@@ -19,6 +20,8 @@ var _auction_resolving := false
 var opening_state := OpeningState.LOCKED
 var item_zones: Dictionary = {}
 var _opening_resolving := false
+var sold_item_ids: Dictionary = {}
+var _sale_resolving := false
 
 
 func _ready() -> void:
@@ -53,7 +56,7 @@ func earn(amount: int, reason := "Операция") -> bool:
 
 
 func reset_for_debug() -> void:
-	if _auction_resolving or _opening_resolving:
+	if _auction_resolving or _opening_resolving or _sale_resolving:
 		return
 	tokens = STARTING_TOKENS
 	lot_a_won = false
@@ -63,6 +66,8 @@ func reset_for_debug() -> void:
 	_auction_resolving = false
 	opening_state = OpeningState.LOCKED
 	item_zones.clear()
+	sold_item_ids.clear()
+	_sale_resolving = false
 	current_stage = "Мастерская — аукцион лота A"
 	event_log.clear()
 	_record_event("DEBUG: состояние сброшено. Баланс: %d." % tokens)
@@ -159,6 +164,52 @@ func assign_item(id: String, zone: String) -> bool:
 		current_stage = "лот A: вскрытие и распределение завершены"
 	_record_event("Распределение: %s → %s (%d/%d). Только назначение зоны, без продажи." % [next_item.display_name, zone, item_zones.size(), LOT_A.future_items.size()])
 	_opening_resolving = false
+	return true
+
+
+func get_lot_a_inventory() -> Array[Dictionary]:
+	# S05 is a projection of Lot A data, not a general inventory container.
+	if opening_state != OpeningState.COMPLETE or not _opening_items_valid():
+		return []
+	var inventory: Array[Dictionary] = []
+	for item in LOT_A.future_items:
+		if not item_zones.has(item.id):
+			return []
+		inventory.append({
+			"id": item.id,
+			"display_name": item.display_name,
+			"initial_condition": item.initial_condition,
+			"zone": str(item_zones[item.id]),
+			"sold": sold_item_ids.has(item.id),
+			"can_quick_sell": item.id in QUICK_SALE_ITEM_IDS and not sold_item_ids.has(item.id),
+			"quick_sale_value": item.quick_sale_value,
+		})
+	return inventory
+
+
+func quick_sell_item(id: String) -> bool:
+	if _sale_resolving or _auction_resolving or _opening_resolving or opening_state != OpeningState.COMPLETE:
+		return false
+	if id not in QUICK_SALE_ITEM_IDS or sold_item_ids.has(id):
+		return false
+	var item: ItemDefinition
+	for candidate in LOT_A.future_items:
+		if candidate.id == id:
+			item = candidate
+			break
+	if item == null or not item_zones.has(id) or item.quick_sale_value <= 0:
+		return false
+	_sale_resolving = true
+	var previous_stage := current_stage
+	sold_item_ids[id] = true
+	if sold_item_ids.size() == QUICK_SALE_ITEM_IDS.size():
+		current_stage = "Базовые находки проданы; V-12 ждёт S06"
+	if not earn(item.quick_sale_value, "Быстрая продажа: " + item.display_name):
+		sold_item_ids.erase(id)
+		current_stage = previous_stage
+		_sale_resolving = false
+		return false
+	_sale_resolving = false
 	return true
 
 

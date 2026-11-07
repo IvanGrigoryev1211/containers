@@ -170,9 +170,9 @@ func run() -> void:
 	# Production modal switch keeps a single visible screen.
 	scene._show_modal(scene.auction_screen)
 	scene._show_modal(ui)
-	check(ui.visible and not scene.auction_screen.visible and scene._active_modal() == ui, "shared modality: only opening visible")
+	check(ui.visible and not scene.auction_screen.visible and not scene.sale_screen.visible and scene._active_modal() == ui, "shared modality: only opening visible")
 	scene._show_modal(scene.auction_screen)
-	check(not ui.visible and scene.auction_screen.visible, "shared modality: only auction visible")
+	check(not ui.visible and scene.auction_screen.visible and not scene.sale_screen.visible, "shared modality: only auction visible")
 	key(KEY_ESCAPE)
 	prepare(State.LOCKED)
 	var stations := 0
@@ -198,6 +198,9 @@ func run() -> void:
 				key(KEY_ESCAPE)
 			elif title == "Стол вскрытия":
 				check(ui.visible, "ray E opening")
+				key(KEY_ESCAPE)
+			elif title == "Терминал продажи":
+				check(scene.sale_screen.visible, "ray E sale")
 				key(KEY_ESCAPE)
 			else:
 				check(scene.debug_label.text == "DEBUG: взаимодействие — " + title, "ray E other station")

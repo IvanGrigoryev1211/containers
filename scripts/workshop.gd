@@ -22,6 +22,7 @@ var debug_panel: CanvasLayer
 var game_state: Variant
 var auction_screen: CanvasLayer
 var opening_screen: CanvasLayer
+var sale_screen: CanvasLayer
 
 
 func _ready() -> void:
@@ -38,6 +39,8 @@ func _ready() -> void:
 	add_child(auction_screen)
 	opening_screen = preload("res://scripts/opening_screen.gd").new()
 	add_child(opening_screen)
+	sale_screen = preload("res://scripts/sale_screen.gd").new()
+	add_child(sale_screen)
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
@@ -314,19 +317,22 @@ func _interact_with_target() -> void:
 	if station_name == "Стол вскрытия":
 		_show_modal(opening_screen)
 		return
+	if station_name == "Терминал продажи":
+		_show_modal(sale_screen)
+		return
 	debug_label.text = "DEBUG: взаимодействие — " + station_name
 	debug_timer = 2.5
 
 
 func _active_modal() -> CanvasLayer:
-	for screen in [auction_screen, opening_screen]:
+	for screen in [auction_screen, opening_screen, sale_screen]:
 		if screen != null and screen.visible:
 			return screen
 	return null
 
 
 func _show_modal(screen: CanvasLayer) -> void:
-	for other in [auction_screen, opening_screen]:
+	for other in [auction_screen, opening_screen, sale_screen]:
 		if other != screen:
 			other.hide()
 	target_station = null
