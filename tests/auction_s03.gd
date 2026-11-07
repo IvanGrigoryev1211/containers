@@ -84,7 +84,7 @@ func run() -> void:
 	await process_frame
 	check(ui.bid_summary.visible and ui.bid_summary.text == "620" and not ui.bid.visible, "winning limit remains visible as read-only 620")
 	check(state.lot_a_won and state.lot_a_hypothesis == "Прибор; риск воды", "ownership and hypothesis recorded")
-	check(state.current_stage == "лот A выигран; вскрытие ещё не реализовано", "stage updated")
+	check(state.current_stage == "лот A выигран; идите к столу вскрытия", "stage updated")
 	var logs: String = "\n".join(state.event_log)
 	check("предел 620; гипотеза: Прибор; риск воды" in logs and "победу за 580" in logs, "bid, hypothesis and rival rule logged")
 	var spent := 0
@@ -92,7 +92,7 @@ func run() -> void:
 		if entry.begins_with("Списано"):
 			spent += 1
 	check(spent == 1, "exactly one spend entry")
-	check(ui.confirm_button.disabled and not ui.hypothesis.editable and "следующей сессией" in ui.result_label.text, "win placeholder and disabled controls")
+	check(ui.confirm_button.disabled and not ui.hypothesis.editable and "столу вскрытия" in ui.result_label.text, "opening direction and disabled controls")
 	ui.confirm_button.pressed.emit()
 	ui.close()
 	ui.open()

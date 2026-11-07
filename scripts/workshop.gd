@@ -21,6 +21,7 @@ var debug_timer := 0.0
 var debug_panel: CanvasLayer
 var game_state: Variant
 var auction_screen: CanvasLayer
+var opening_screen: CanvasLayer
 
 
 func _ready() -> void:
@@ -35,6 +36,8 @@ func _ready() -> void:
 	_build_debug_panel()
 	auction_screen = preload("res://scripts/auction_screen.gd").new()
 	add_child(auction_screen)
+	opening_screen = preload("res://scripts/opening_screen.gd").new()
+	add_child(opening_screen)
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
@@ -48,7 +51,7 @@ func _process(delta: float) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if player == null or (auction_screen != null and auction_screen.visible):
+	if player == null or _active_modal() != null:
 		return
 
 	var move_input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
@@ -61,10 +64,11 @@ func _physics_process(_delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	# Modal input belongs to the auction, including E typed into the hypothesis.
-	if auction_screen != null and auction_screen.visible:
+	# Both screens own modal input, including E typed into the hypothesis.
+	var modal := _active_modal()
+	if modal != null:
 		if event.is_action_pressed("release_cursor"):
-			auction_screen.close()
+			modal.close()
 			get_viewport().set_input_as_handled()
 		return
 	# Use the physical E key directly as well as the InputMap action. This keeps
@@ -283,7 +287,7 @@ func _build_debug_panel() -> void:
 func _update_interaction_target() -> void:
 	target_station = null
 	prompt_label.text = ""
-	if camera == null or (auction_screen != null and auction_screen.visible):
+	if camera == null or _active_modal() != null:
 		return
 
 	var query := PhysicsRayQueryParameters3D.create(camera.global_position, camera.global_position + -camera.global_transform.basis.z * INTERACTION_DISTANCE)
@@ -305,10 +309,29 @@ func _interact_with_target() -> void:
 		return
 	var station_name := str(target_station.get_meta("station_name"))
 	if station_name == "Терминал аукциона":
-		auction_screen.open()
+		_show_modal(auction_screen)
+		return
+	if station_name == "Стол вскрытия":
+		_show_modal(opening_screen)
 		return
 	debug_label.text = "DEBUG: взаимодействие — " + station_name
 	debug_timer = 2.5
+
+
+func _active_modal() -> CanvasLayer:
+	for screen in [auction_screen, opening_screen]:
+		if screen != null and screen.visible:
+			return screen
+	return null
+
+
+func _show_modal(screen: CanvasLayer) -> void:
+	for other in [auction_screen, opening_screen]:
+		if other != screen:
+			other.hide()
+	target_station = null
+	prompt_label.text = ""
+	screen.open()
 
 
 func _add_solid_box(node_name: String, box_position: Vector3, size: Vector3, material: StandardMaterial3D) -> void:

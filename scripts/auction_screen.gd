@@ -112,7 +112,7 @@ func refresh() -> void:
 	hypothesis.editable = not game_state.lot_a_won
 	confirm_button.disabled = game_state.lot_a_won or game_state.tokens < LOT_A.start_price
 	if game_state.lot_a_won:
-		result_label.text = "Лот A выигран за %d жетонов. Вскрытие будет следующей сессией; сейчас оно ещё не реализовано. Повторная ставка недоступна." % game_state.lot_a_paid
+		result_label.text = "Лот A выигран за %d жетонов. Закройте аукцион и идите к столу вскрытия: наведитесь на него и нажмите E. Повторная ставка недоступна." % game_state.lot_a_paid
 	elif game_state.tokens < LOT_A.start_price:
 		result_label.text = "Недостаточно жетонов даже для стартовой ставки."
 
